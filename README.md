@@ -1,6 +1,8 @@
 # Ganymed SSH-2
 Ganymed SSH-2 for Java - build 264
 
+[English](README.md), [中文](README_zh.md)
+
 Source: https://github.com/balaiitm/ganymed264.git
 Description: Solution The following error occurs in Ganymed SSH-2 for OpenSSH of an earlier version
 ```angular2html
