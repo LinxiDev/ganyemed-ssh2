@@ -4,7 +4,7 @@ Ganymed SSH-2 for Java - build 264
 [English](README.md), [中文](README_zh.md)
 
 来源:https://github.com/balaiitm/ganymed264.git
-问题描述：解决方案使用较低版本的OpenSSH时，Ganymed SSH-2出现以下错误
+问题描述：解决方案使用高版本的OpenSSH时，Ganymed SSH-2出现以下错误
 ```angular2html
 java.io.IOException: Key exchange was not finished, connection is closed.
 at ch.ethz.ssh2.transport.KexManager.getOrWaitForConnectionInfo(KexManager.java:75)
