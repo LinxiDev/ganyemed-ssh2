@@ -27,7 +27,7 @@ jobs:
       - name: 使用Maven构建项目
         run: mvn package --batch-mode
       # 创建GitHub Release
-      - name: Create Release
+      - name: 创建GitHub Release
         id: create_release
         # 使用GitHub官方的create-release action，用于创建GitHub Release
         uses: actions/create-release@v1
@@ -43,8 +43,8 @@ jobs:
           prerelease: false  # 是否是预发布状态
       - name: 列出文件列表
         run: ls -R
-      - name: 显示目录树
-        run: tree
+    #   - name: 显示目录树
+    #     run: tree
       - name: 发布JAR文件
         id: upload_jar
         # 使用GitHub官方的upload-release-asset action，用于上传Release的附件
@@ -53,7 +53,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  # 设置上传URL
-          asset_path: ./ganyemed-ssh2/target/ganymed-ssh2-264.jar  # 设置要上传的JAR文件路径
+          asset_path: ./target/ganymed-ssh2-264.jar  # 设置要上传的JAR文件路径
           asset_name: ganyemed-ssh2  # 设置JAR文件的名称
           asset_content_type: application/java-archive  # 设置JAR文件的内容类型
     
