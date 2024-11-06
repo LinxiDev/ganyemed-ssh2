@@ -53,7 +53,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  # 设置上传URL
-          asset_path: ./ganyemed-ssh2/target/ganyemed-ssh2.jar  # 设置要上传的JAR文件路径
+          asset_path: ./ganyemed-ssh2/target/ganymed-ssh2-264.jar  # 设置要上传的JAR文件路径
           asset_name: ganyemed-ssh2  # 设置JAR文件的名称
           asset_content_type: application/java-archive  # 设置JAR文件的内容类型
     
