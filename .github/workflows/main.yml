@@ -1,0 +1,89 @@
+# 工作流名称Build and Release
+name: 构建和发布
+
+on:
+  # 当代码推送到master分支时触发工作流程
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    # 在最新的Ubuntu操作系统上运行任务
+    runs-on: ubuntu-latest
+
+    steps:
+      # 使用GitHub官方的checkout action，用于检出代码库
+      - name: 检查存储库
+        uses: actions/checkout@v4
+      # 使用GitHub官方的setup-java action，用于安装和配置Java环境
+      - name: 安装JDK 8
+        uses: actions/setup-java@master
+        with:
+          java-version: 8
+          distribution: "adopt"
+          cache: maven
+      # 使用Maven构建项目 执行mvn package命令进行项目构建
+      - name: 使用Maven构建项目
+        run: mvn package --batch-mode
+      # 创建GitHub Release
+      - name: Create Release
+        id: create_release
+        # 使用GitHub官方的create-release action，用于创建GitHub Release
+        uses: actions/create-release@v1
+        env:
+          # 设置GitHub令牌作为环境变量
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          # 设置Release的标签名称
+          tag_name: Release-${{ github.run_number }}  
+          # 设置Release的名称
+          release_name: Release ${{ github.run_number }} 
+          draft: false  # 是否是草稿状态
+          prerelease: false  # 是否是预发布状态
+      - name: 列出文件列表
+        run: ls -R
+      - name: 显示目录树
+        run: tree
+      - name: 发布JAR文件
+        id: upload_jar
+        # 使用GitHub官方的upload-release-asset action，用于上传Release的附件
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  # 设置上传URL
+          asset_path: ./ganyemed-ssh2/target/ganyemed-ssh2.jar  # 设置要上传的JAR文件路径
+          asset_name: ganyemed-ssh2  # 设置JAR文件的名称
+          asset_content_type: application/java-archive  # 设置JAR文件的内容类型
+    
+    #   - name: rm Jar  # 删除JAR文件
+    #     uses: appleboy/ssh-action@master  # 使用appleboy的ssh-action，用于在服务器上执行SSH命令
+    #     with:
+    #       host: ${{ secrets.SERVER_HOST }}  # 设置服务器主机
+    #       username: ${{ secrets.SERVER_USERNAME }}  # 设置服务器用户名
+    #       key: ${{ secrets.SSH_KEY }}  # 设置SSH密钥
+    #       script: |
+    #         bash ${{secrets.SERVER_SHFILE}}/SpringBootStart-guosai.sh
+    #         cd /${{secrets.SERVER_FILE}}/controller/target/
+    #         rm -rf controller-1.0.jar
+    #   - name: upload jar  # 上传JAR文件到服务器
+    #     uses: appleboy/scp-action@master  # 使用appleboy的scp-action，用于将文件复制到远程服务器
+    #     with:
+    #       host: ${{ secrets.SERVER_HOST }}  # 设置服务器主机
+    #       username: ${{ secrets.SERVER_USERNAME }}  # 设置服务器用户名
+    #       key: ${{ secrets.SSH_KEY }}  # 设置SSH密钥
+    #       source: ./controller/target/controller-1.0.jar  # 设置本地要上传的JAR文件路径
+    #       target: ${{secrets.SERVER_FILE}}/  # 设置远程服务器上的目标路径
+     
+    #   - name: Execute shell scripts on server  # 在服务器上执行shell脚本
+    #     uses: appleboy/ssh-action@master  # 使用appleboy的ssh-action，用于在服务器上执行SSH命令
+    #     with:
+    #       host: ${{ secrets.SERVER_HOST }}  # 设置服务器主机
+    #       username: ${{ secrets.SERVER_USERNAME }}  # 设置服务器用户名
+    #       key: ${{ secrets.SSH_KEY }}  # 设置SSH密钥
+    #       script: |
+    #         cd /${{secrets.SERVER_FILE}}/controller/target/
+    #         ps -ef | grep controller-1.0.jar | grep -v grep | awk '{print $2}' | xargs kill -9 
+    #         nohup java -jar controller-1.0.jar > nohup.out &
+    #         exit
